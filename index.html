@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SwingSpace - Share Your Moments</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <title>SonicWave Studio - Multi-Track Visualizer</title>
     <style>
         * {
             margin: 0;
@@ -12,764 +11,645 @@
             box-sizing: border-box;
         }
 
-        :root {
-            --bg-dark: #0a0a0f;
-            --bg-card: rgba(20, 20, 30, 0.6);
-            --accent: #c9a96e;
-            --accent-light: #e8d5b7;
-            --text-primary: #f0f0f0;
-            --text-secondary: #a0a0a0;
-            --border: rgba(255, 255, 255, 0.1);
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
         body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg-dark);
-            color: var(--text-primary);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: #fff;
             min-height: 100vh;
             overflow-x: hidden;
         }
 
-        /* Animated Background Canvas */
-        #canvas-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            background: linear-gradient(to bottom, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
-        }
-
-        /* Stars */
-        .stars {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        .star {
-            position: absolute;
-            background: white;
-            border-radius: 50%;
-            animation: twinkle 3s infinite;
-        }
-
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 1; }
-        }
-
-        /* Navigation */
-        nav {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            padding: 1.5rem 3rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(10, 10, 15, 0.8);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border);
-            z-index: 1000;
-        }
-
-        .logo {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.8rem;
-            color: var(--accent);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-        }
-
-        .nav-links a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            transition: color 0.3s;
-            font-weight: 400;
-        }
-
-        .nav-links a:hover {
-            color: var(--accent);
-        }
-
-        .user-info {
-            display: none;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent), var(--accent-light));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            color: var(--bg-dark);
-        }
-
-        /* Main Container */
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 6rem 2rem 2rem;
+            padding: 20px;
         }
 
-        /* Hero Section */
-        .hero-section {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            position: relative;
-            padding-top: 4rem;
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom: 2px solid #00d4ff;
+            margin-bottom: 30px;
         }
 
-        .hero-content {
-            flex: 1;
-            padding-right: 2rem;
-            z-index: 10;
-        }
-
-        .hero-content h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 3.5rem;
-            line-height: 1.1;
-            margin-bottom: 1.5rem;
-            background: linear-gradient(135deg, var(--text-primary), var(--accent));
+        h1 {
+            font-size: 3em;
+            background: linear-gradient(45deg, #00d4ff, #7b2cbf);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
         }
 
-        .hero-content p {
-            font-size: 1.2rem;
-            color: var(--text-secondary);
-            line-height: 1.6;
-            margin-bottom: 2rem;
-            max-width: 500px;
+        .subtitle {
+            color: #888;
+            font-size: 1.2em;
         }
 
-        .scroll-indicator {
-            position: absolute;
-            bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--text-secondary);
-            animation: bounce 2s infinite;
-            cursor: pointer;
-            z-index: 10;
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
-            40% { transform: translateX(-50%) translateY(-10px); }
-            60% { transform: translateX(-50%) translateY(-5px); }
-        }
-
-        .swing-illustration {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-        }
-
-        /* CSS Swing Animation */
-        .swing-container {
-            position: relative;
-            width: 300px;
-            height: 400px;
-        }
-
-        .tree {
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 4px;
-            height: 350px;
-            background: linear-gradient(to top, #3d2817, #5c4033);
-            border-radius: 2px;
-        }
-
-        .branch {
-            position: absolute;
-            top: 50px;
-            left: 50%;
-            width: 120px;
-            height: 4px;
-            background: #5c4033;
-            transform: translateX(-50%);
-            border-radius: 2px;
-        }
-
-        .rope {
-            position: absolute;
-            top: 54px;
-            left: 50%;
-            width: 2px;
-            height: 150px;
-            background: rgba(255, 255, 255, 0.3);
-            transform-origin: top center;
-            animation: swing 3s ease-in-out infinite;
-        }
-
-        .swing-seat {
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 8px;
-            background: #8b4513;
-            border-radius: 4px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-        }
-
-        .boy {
-            position: absolute;
-            bottom: 8px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 30px;
-            height: 50px;
-        }
-
-        .boy-head {
-            width: 20px;
-            height: 20px;
-            background: #fdbf60;
-            border-radius: 50%;
-            margin: 0 auto;
-            position: relative;
-        }
-
-        .boy-body {
-            width: 24px;
-            height: 30px;
-            background: #4a5568;
-            margin: 2px auto 0;
-            border-radius: 10px 10px 5px 5px;
-            position: relative;
-        }
-
-        .boy-arm {
-            position: absolute;
-            width: 20px;
-            height: 4px;
-            background: #fdbf60;
-            top: 5px;
-            border-radius: 2px;
-        }
-
-        .boy-arm.left {
-            left: -15px;
-            transform: rotate(-20deg);
-            transform-origin: right center;
-        }
-
-        .boy-arm.right {
-            right: -15px;
-            transform: rotate(20deg);
-            transform-origin: left center;
-        }
-
-        .boy-leg {
-            position: absolute;
-            bottom: -15px;
-            width: 4px;
-            height: 20px;
-            background: #2d3748;
-            border-radius: 2px;
-        }
-
-        .boy-leg.left {
-            left: 5px;
-            transform: rotate(10deg);
-        }
-
-        .boy-leg.right {
-            right: 5px;
-            transform: rotate(-10deg);
-        }
-
-        @keyframes swing {
-            0% { transform: rotate(-15deg); }
-            50% { transform: rotate(15deg); }
-            100% { transform: rotate(-15deg); }
-        }
-
-        /* Auth Forms */
-        .auth-card {
-            background: var(--bg-card);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 2rem;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-            margin-top: 2rem;
-        }
-
-        .auth-tabs {
-            display: flex;
-            gap: 2rem;
-            margin-bottom: 1.5rem;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .auth-tab {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 1rem;
-            cursor: pointer;
-            padding-bottom: 0.5rem;
-            position: relative;
-            transition: color 0.3s;
-        }
-
-        .auth-tab.active {
-            color: var(--accent);
-        }
-
-        .auth-tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: -1px;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: var(--accent);
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.25rem;
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 0.75rem;
+        .upload-section {
             background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-size: 0.95rem;
-            transition: all 0.3s;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: var(--accent);
-            background: rgba(255, 255, 255, 0.08);
-        }
-
-        .btn-primary {
-            width: 100%;
-            padding: 0.875rem;
-            background: linear-gradient(135deg, var(--accent), var(--accent-light));
-            border: none;
-            border-radius: 8px;
-            color: var(--bg-dark);
-            font-size: 0.95rem;
-            font-weight: 600;
+            border: 2px dashed #00d4ff;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
             cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
-            margin-top: 0.5rem;
         }
 
-        .btn-primary:hover {
+        .upload-section:hover {
+            background: rgba(0, 212, 255, 0.1);
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(201, 169, 110, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
         }
 
-        .btn-primary:disabled {
-            opacity: 0.6;
+        .upload-section.dragover {
+            background: rgba(0, 212, 255, 0.2);
+            border-color: #7b2cbf;
+        }
+
+        .upload-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #00d4ff, #7b2cbf);
+            border: none;
+            padding: 15px 40px;
+            color: white;
+            font-size: 1.1em;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(0, 212, 255, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
             cursor: not-allowed;
             transform: none;
         }
 
-        .hidden {
-            display: none !important;
-        }
-
-        /* Gallery Section */
-        .gallery-section {
-            min-height: 100vh;
-            padding-top: 2rem;
-            display: none;
-        }
-
-        .gallery-section.active {
-            display: block;
-        }
-
-        .gallery-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            padding: 1rem 0;
-        }
-
-        .gallery-header h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: 2rem;
-            color: var(--accent);
-        }
-
-        .upload-btn {
-            padding: 0.75rem 1.5rem;
-            background: linear-gradient(135deg, var(--accent), var(--accent-light));
-            border: none;
-            border-radius: 8px;
-            color: var(--bg-dark);
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: transform 0.3s;
-            font-size: 0.9rem;
-        }
-
-        .upload-btn:hover {
-            transform: translateY(-2px);
-        }
-
-        /* Photo Grid */
-        .photo-grid {
+        .controls-section {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1.5rem;
-            padding-bottom: 4rem;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            margin-bottom: 30px;
         }
 
-        .photo-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            overflow: hidden;
-            transition: transform 0.3s, box-shadow 0.3s;
-            cursor: pointer;
-            position: relative;
-            animation: fadeInUp 0.6s ease-out both;
+        .playlist-panel {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 20px;
+            padding: 20px;
+            max-height: 600px;
+            overflow-y: auto;
         }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .photo-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-        }
-
-        .photo-card img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            display: block;
-        }
-
-        .photo-info {
-            padding: 1rem;
-        }
-
-        .photo-info h3 {
-            font-family: 'Playfair Display', serif;
-            margin-bottom: 0.25rem;
-            color: var(--accent-light);
-            font-size: 1rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .photo-info .ai-desc {
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-            line-height: 1.4;
-            font-style: italic;
-            margin-bottom: 0.5rem;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .photo-meta {
+        .playlist-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 0.75rem;
-            padding-top: 0.75rem;
-            border-top: 1px solid var(--border);
-            font-size: 0.8rem;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #333;
         }
 
-        .uploader {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--text-secondary);
+        .track-count {
+            background: #00d4ff;
+            color: #000;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
         }
 
-        .uploader-avatar {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent), var(--accent-light));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.65rem;
-            color: var(--bg-dark);
-            font-weight: 600;
-        }
-
-        /* Upload Modal */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(5px);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            overflow-y: auto;
-            padding: 2rem;
-        }
-
-        .modal-overlay.active {
-            display: flex;
-        }
-
-        .modal {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 1.5rem;
-            width: 90%;
-            max-width: 600px;
-            max-height: 85vh;
-            overflow-y: auto;
-            position: relative;
-        }
-
-        .modal h2 {
-            font-family: 'Playfair Display', serif;
-            margin-bottom: 1rem;
-            color: var(--accent);
-            font-size: 1.5rem;
-        }
-
-        .close-modal {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 1.5rem;
-            cursor: pointer;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-        }
-
-        .close-modal:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-primary);
-        }
-
-        .upload-area {
-            border: 2px dashed var(--border);
-            border-radius: 12px;
-            padding: 2rem;
-            text-align: center;
-            margin-bottom: 1rem;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-
-        .upload-area:hover, .upload-area.dragover {
-            border-color: var(--accent);
-            background: rgba(201, 169, 110, 0.05);
-        }
-
-        .upload-area input {
-            display: none;
-        }
-
-        .selected-files {
-            margin-bottom: 1rem;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        .file-item {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.5rem;
+        .track-item {
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            margin-bottom: 0.5rem;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
         }
 
-        .file-item img {
-            width: 40px;
-            height: 40px;
-            object-fit: cover;
-            border-radius: 4px;
+        .track-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
         }
 
-        .file-item-info {
+        .track-item.playing {
+            border-left-color: #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .track-number {
+            width: 30px;
+            height: 30px;
+            background: #333;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .track-item.playing .track-number {
+            background: #00d4ff;
+            color: #000;
+        }
+
+        .track-info {
             flex: 1;
-            min-width: 0;
         }
 
-        .file-item-name {
-            font-size: 0.85rem;
-            color: var(--text-primary);
+        .track-name {
+            font-weight: bold;
+            margin-bottom: 5px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            max-width: 200px;
         }
 
-        .file-item-status {
-            font-size: 0.75rem;
-            color: var(--accent);
+        .track-duration {
+            font-size: 0.85em;
+            color: #888;
         }
 
-        .remove-file {
+        .track-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .icon-btn {
             background: none;
             border: none;
-            color: var(--text-secondary);
+            color: #fff;
             cursor: pointer;
-            font-size: 1.2rem;
-            padding: 0.25rem;
-            line-height: 1;
-        }
-
-        .remove-file:hover {
-            color: #ff6b6b;
-        }
-
-        .auto-describe-toggle {
+            font-size: 1.2em;
+            padding: 5px;
+            transition: all 0.2s;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
-            gap: 1rem;
-            margin: 1rem 0;
-            padding: 0.75rem;
-            background: rgba(201, 169, 110, 0.1);
-            border-radius: 8px;
-            border: 1px solid var(--border);
+            justify-content: center;
         }
 
-        .toggle-switch {
-            position: relative;
-            width: 44px;
-            height: 24px;
+        .icon-btn:hover {
             background: rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
+            color: #00d4ff;
+        }
+
+        .visualizer-panel {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 20px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #visualizer {
+            width: 100%;
+            height: 400px;
+            border-radius: 10px;
+            background: radial-gradient(circle at center, #1a1a2e 0%, #000 100%);
+        }
+
+        .effects-panel {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .effect-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
             cursor: pointer;
-            transition: background 0.3s;
-            flex-shrink: 0;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
         }
 
-        .toggle-switch.active {
-            background: var(--accent);
+        .effect-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.1);
         }
 
-        .toggle-slider {
-            position: absolute;
-            top: 2px;
-            left: 2px;
+        .effect-card.active {
+            border-color: #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .effect-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .effect-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .effect-desc {
+            font-size: 0.8em;
+            color: #888;
+        }
+
+        .master-controls {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .control-label {
+            font-size: 0.9em;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        input[type="range"] {
+            width: 200px;
+            height: 6px;
+            background: #333;
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
             width: 20px;
             height: 20px;
-            background: white;
+            background: #00d4ff;
             border-radius: 50%;
-            transition: transform 0.3s;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
         }
 
-        .toggle-switch.active .toggle-slider {
-            transform: translateX(20px);
+        .volume-display {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #00d4ff;
+            min-width: 50px;
+            text-align: center;
         }
 
-        .toggle-label {
-            font-size: 0.9rem;
+        .playback-controls {
+            display: flex;
+            gap: 20px;
+            align-items: center;
         }
 
-        .toggle-label div:first-child {
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 0.25rem;
+        .play-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            font-size: 2em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(45deg, #00d4ff, #7b2cbf);
+            border: none;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(0, 212, 255, 0.4);
         }
 
-        .toggle-label div:last-child {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
+        .play-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 30px rgba(0, 212, 255, 0.6);
         }
 
-        .progress-bar {
-            width: 100%;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 2px;
-            margin: 1rem 0;
-            overflow: hidden;
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .playing-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #00d4ff;
+            border-radius: 50%;
+            margin-left: 10px;
+            animation: pulse 1s infinite;
             display: none;
         }
 
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--accent), var(--accent-light));
-            width: 0%;
-            transition: width 
+        .track-item.playing .playing-indicator {
+            display: inline-block;
+        }
+
+        @media (max-width: 968px) {
+            .controls-section {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎵 SonicWave Studio</h1>
+            <p class="subtitle">Upload 10+ tracks • Synchronized Playback • Beat-Reactive Visuals</p>
+        </header>
+
+        <div class="upload-section" id="dropZone">
+            <span class="upload-icon">📁</span>
+            <h2>Drop your music here or click to browse</h2>
+            <p style="margin: 15px 0; color: #888;">Supports MP3, WAV, OGG, FLAC (Select multiple files)</p>
+            <input type="file" id="fileInput" class="file-input" accept="audio/*" multiple>
+            <button class="btn" onclick="document.getElementById('fileInput').click()">Select Files</button>
+        </div>
+
+        <div class="controls-section">
+            <div class="playlist-panel">
+                <div class="playlist-header">
+                    <h3>Playlist</h3>
+                    <span class="track-count" id="trackCount">0 tracks</span>
+                </div>
+                <div id="playlist">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🎧</div>
+                        <p>No tracks loaded yet</p>
+                        <p style="font-size: 0.9em; margin-top: 10px;">Upload some music to get started!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="visualizer-panel">
+                <canvas id="visualizer"></canvas>
+                
+                <div class="effects-panel">
+                    <div class="effect-card active" data-effect="bars">
+                        <span class="effect-icon">📊</span>
+                        <div class="effect-name">Frequency Bars</div>
+                        <div class="effect-desc">Classic spectrum analyzer</div>
+                    </div>
+                    <div class="effect-card" data-effect="circular">
+                        <span class="effect-icon">🌀</span>
+                        <div class="effect-name">Circular Wave</div>
+                        <div class="effect-desc">Radial beat visualization</div>
+                    </div>
+                    <div class="effect-card" data-effect="particles">
+                        <span class="effect-icon">✨</span>
+                        <div class="effect-name">Particle Burst</div>
+                        <div class="effect-desc">Beat-reactive particles</div>
+                    </div>
+                    <div class="effect-card" data-effect="waveform">
+                        <span class="effect-icon">〰️</span>
+                        <div class="effect-name">Oscilloscope</div>
+                        <div class="effect-desc">Time-domain waveform</div>
+                    </div>
+                    <div class="effect-card" data-effect="spectrum">
+                        <span class="effect-icon">🌈</span>
+                        <div class="effect-name">Color Spectrum</div>
+                        <div class="effect-desc">RGB frequency mapping</div>
+                    </div>
+                    <div class="effect-card" data-effect="dual">
+                        <span class="effect-icon">🎭</span>
+                        <div class="effect-name">Dual Layer</div>
+                        <div class="effect-desc">Combined visualization</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="master-controls">
+            <div class="playback-controls">
+                <button class="icon-btn" id="prevBtn" title="Previous">⏮</button>
+                <button class="play-btn" id="playBtn" title="Play/Pause">▶</button>
+                <button class="icon-btn" id="nextBtn" title="Next">⏭</button>
+                <button class="icon-btn" id="shuffleBtn" title="Shuffle">🔀</button>
+            </div>
+
+            <div class="control-group">
+                <span class="control-label">Master Volume</span>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <input type="range" id="volumeSlider" min="0" max="100" value="70">
+                    <span class="volume-display" id="volumeDisplay">70%</span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <span class="control-label">Bass Boost</span>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <input type="range" id="bassSlider" min="0" max="100" value="50">
+                    <span class="volume-display" id="bassDisplay">50%</span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <span class="control-label">Visual Sensitivity</span>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <input type="range" id="sensitivitySlider" min="1" max="10" value="5">
+                    <span class="volume-display" id="sensitivityDisplay">5</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Audio Context and Variables
+        let audioContext;
+        let analyser;
+        let gainNode;
+        let bassNode;
+        let source;
+        let currentAudio = null;
+        let isPlaying = false;
+        let tracks = [];
+        let currentTrackIndex = 0;
+        let currentEffect = 'bars';
+        let animationId;
+        let shuffleMode = false;
+
+        // Canvas Setup
+        const canvas = document.getElementById('visualizer');
+        const ctx = canvas.getContext('2d');
+        
+        function resizeCanvas() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // File Upload Handling
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+
+        function handleFiles(files) {
+            const audioFiles = Array.from(files).filter(file => file.type.startsWith('audio/'));
+            
+            if (audioFiles.length === 0) {
+                alert('Please upload audio files only!');
+                return;
+            }
+
+            if (tracks.length === 0) {
+                initAudioContext();
+            }
+
+            audioFiles.forEach(file => {
+                const track = {
+                    file: file,
+                    name: file.name.replace(/\.[^/.]+$/, ""),
+                    url: URL.createObjectURL(file),
+                    duration: '0:00'
+                };
+                
+                // Get duration
+                const tempAudio = new Audio(track.url);
+                tempAudio.addEventListener('loadedmetadata', () => {
+                    track.duration = formatTime(tempAudio.duration);
+                    updatePlaylist();
+                });
+                
+                tracks.push(track);
+            });
+
+            updatePlaylist();
+            
+            if (tracks.length > 0 && !currentAudio) {
+                loadTrack(0);
+            }
+        }
+
+        function formatTime(seconds) {
+            if (isNaN(seconds)) return '0:00';
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function initAudioContext() {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 256;
+            analyser.smoothingTimeConstant = 0.8;
+            
+            gainNode = audioContext.createGain();
+            bassNode = audioContext.createBiquadFilter();
+            bassNode.type = 'lowshelf';
+            bassNode.frequency.value = 150;
+            
+            gainNode.connect(bassNode);
+            bassNode.connect(analyser);
+            analyser.connect(audioContext.destination);
+        }
+
+        function loadTrack(index) {
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio = null;
+            }
+
+            currentTrackIndex = index;
+            const track = tracks[index];
+            
+            currentAudio = new Audio(track.url);
+            currentAudio.crossOrigin = 'anonymous';
+            
+            if (audioContext) {
+                if (source) source.disconnect();
+                source = audioContext.createMediaElementSource(currentAudio);
+                source.connect(gainNode);
+            }
+
+            currentAudio.volume = document.getElementById('volumeSlider').value / 100;
+            
+            currentAudio.addEventListener('ended', () => {
+                if (shuffleMode) {
+                    playRandom();
+                } else {
+                    nextTrack();
+                }
+            });
+
+            updatePlaylist();
+            updatePlayButton();
+            
+            if (isPlaying) {
+                play();
+            }
+        }
+
+        function updatePlaylist() {
+            const playlist = document.getElementById('playlist');
+            const trackCount = document.getElementById('
